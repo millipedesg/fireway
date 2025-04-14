@@ -1,4 +1,7 @@
 # fireway
+
+> This is a fork of [kevlened/fireway](https://github.com/kevlened/fireway) with additional features and improvements.
+
 A schema migration tool for firestore heavily inspired by [flyway](https://flywaydb.org/)
 
 ## Install
@@ -149,8 +152,7 @@ Migration results are stored in the `fireway` collection in `firestore`
 
 ```js
 // /fireway/3-0.0.1-example
-
-{
+const doc = {
   checksum: 'fdfe6a55a7c97a4346cb59871b4ce97c',
   description: 'example',
   execution_time: 1221,
