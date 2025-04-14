@@ -4,7 +4,6 @@ const util = require('util');
 const os = require('os');
 const fs = require('fs');
 const md5 = require('md5');
-const admin = require('firebase-admin');
 const {Firestore, WriteBatch, CollectionReference, FieldValue, FieldPath, Timestamp} = require('@google-cloud/firestore');
 const semver = require('semver');
 const asyncHooks = require('async_hooks');
@@ -122,7 +121,7 @@ async function trackAsync({log, file, forceWait}, fn) {
 				const name = call.getFileName();
 				if (
 					!name ||
-					name == __filename ||
+					name === __filename ||
 					name.startsWith('internal/') ||
 					name.startsWith('timers.js')
 				) continue;
@@ -197,7 +196,7 @@ async function trackAsync({log, file, forceWait}, fn) {
 }
 trackAsync[dontTrack] = true;
 
-async function migrate({path: dir, projectId, storageBucket, dryrun, app, debug = false, require: req, forceWait = false} = {}) {
+async function migrate({path: dir, projectId, dryrun, debug = false, require: req, forceWait = false} = {}) {
 	if (req) {
 		try {
 			require(req);
@@ -283,18 +282,6 @@ async function migrate({path: dir, projectId, storageBucket, dryrun, app, debug 
 	dryrun && log('Making firestore read-only');
 	proxyWritableMethods();
 
-	if (!storageBucket && projectId) {
-		storageBucket = `${projectId}.appspot.com`;
-	}
-	
-	const providedApp = app;
-	if (!app) {
-		app = admin.initializeApp({
-			projectId,
-			storageBucket
-		});
-	}
-
 	// Use Firestore directly so we can mock for dryruns
 	const firestore = new Firestore({projectId});
 	firestore._fireway_stats = stats;
@@ -343,7 +330,7 @@ async function migrate({path: dir, projectId, storageBucket, dryrun, app, debug 
 		const success = await trackAsync({log, file, forceWait}, async () => {
 			start = new Date();
 			try {
-				await migration.migrate({app, firestore, FieldValue, FieldPath, Timestamp, dryrun});
+				await migration.migrate({firestore, FieldValue, FieldPath, Timestamp, dryrun});
 				return true;
 			} catch(e) {
 				log(`Error in ${file.filename}`, e);
@@ -380,11 +367,6 @@ async function migrate({path: dir, projectId, storageBucket, dryrun, app, debug 
 		if (!success) {
 			throw new Error('Stopped at first failure');
 		}
-	}
-
-	// Ensure firebase terminates
-	if (!providedApp) {
-		app.delete();
 	}
 
 	const {scannedFiles, executedFiles, added, created, updated, set, deleted} = stats;
