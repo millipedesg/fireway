@@ -1,8 +1,11 @@
 {
   "name": "fireway",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Schema migration tool for Firestore",
-  "repository": "https://github.com/millipedesg/fireway.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/millipedesg/fireway.git"
+  },
   "types": "fireway.d.ts",
   "keywords": [
     "schema",
@@ -17,7 +20,9 @@
     "fireway.d.ts"
   ],
   "main": "src/index.js",
-  "bin": "src/cli.js",
+  "bin": {
+    "fireway": "src/cli.js"
+  },
   "author": "mudassirmaroof <mudassir89@gmail.com>",
   "license": "MIT",
   "scripts": {
