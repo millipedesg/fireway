@@ -298,8 +298,8 @@ async function migrate({path: dir, projectId, dryrun, debug = false, require: re
 
 	let installed_rank;
 	if (latest) {
+		files.sort((f1, f2) => semver.compare(f1.version, f2.version));
 		files = files.filter((file) => {
-		log('Checking', file.filename);
 		const exists = result.docs.some(
 			(doc) => doc.data().script === file.filename
 		);
