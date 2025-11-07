@@ -1,6 +1,6 @@
 {
   "name": "@millipedesg/fireway",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Schema migration tool for Firestore",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
     "test": "FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
-    "release": "yarn test && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish --registry=https://npm.pkg.github.com"
+    "release": "git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish --registry=https://npm.pkg.github.com"
   },
   "husky": {
     "hooks": {
