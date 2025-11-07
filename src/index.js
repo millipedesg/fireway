@@ -289,12 +289,8 @@ async function migrate({path: dir, projectId, dryrun, debug = false, require: re
 	const collection = firestore.collection('fireway');
 
 	// Get the latest migration
-	const result = await collection
-		.orderBy('installed_rank', 'desc')
-		.limit(1)
-		.get();
-	const [latestDoc] = result.docs;
-	const latest = latestDoc && latestDoc.data();
+	const result = await collection.orderBy('installed_rank', 'desc').get();
+	const latest = result.docs[0].data();
 
 	if (latest && !latest.success) {
 		throw new Error(`Migration to version ${latest.version} using ${latest.script} failed! Please restore backups and roll back database and code!`);
@@ -302,7 +298,16 @@ async function migrate({path: dir, projectId, dryrun, debug = false, require: re
 
 	let installed_rank;
 	if (latest) {
-		files = files.filter(file => semver.gt(file.version, latest.version));
+		files.sort((f1, f2) => semver.compare(f1.version, f2.version));
+		files = files.filter((file) => {
+		const exists = result.docs.some(
+			(doc) => doc.data().script === file.filename
+		);
+		if (exists) {
+			log(`Skipping ${file.filename} as it has already been run`);
+		}
+		return !exists;
+		});
 		installed_rank = latest.installed_rank;
 	} else {
 		installed_rank = -1;
