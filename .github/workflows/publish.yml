@@ -1,0 +1,97 @@
+name: Publish @millipedesg/fireway
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "publish" to run (bumps must match package.json version)'
+        required: true
+  push:
+    tags:
+      - '*'
+
+permissions:
+  id-token: write
+  packages: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Guard manual dispatch
+        if: github.event_name == 'workflow_dispatch' && inputs.confirm != 'publish'
+        run: |
+          echo 'Manual runs require confirm=publish'
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Test
+        run: yarn test
+
+      - name: Pack release tarball
+        run: npm pack
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate (dev AR)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/837633946356/locations/global/workloadIdentityPools/milli-pool/providers/github'
+          service_account: 'gh-npm-publisher@millipede-dev.iam.gserviceaccount.com'
+
+      - name: Publish tarball to dev AR
+        run: |
+          set -euo pipefail
+          chmod +x ./scripts/write-millipedesg-npmrc.sh
+          ./scripts/write-millipedesg-npmrc.sh millipede-dev
+          npx -y google-artifactregistry-auth
+          npm publish "$(ls -1t millipedesg-fireway-*.tgz | head -1)"
+
+      - name: Authenticate (staging AR)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/362983291711/locations/global/workloadIdentityPools/milli-pool/providers/github-actions-provider'
+          service_account: 'gh-npm-publisher@millipede-staging.iam.gserviceaccount.com'
+
+      - name: Publish tarball to staging AR
+        run: |
+          set -euo pipefail
+          ./scripts/write-millipedesg-npmrc.sh millipede-staging
+          npx -y google-artifactregistry-auth
+          npm publish "$(ls -1t millipedesg-fireway-*.tgz | head -1)"
+
+      - name: Authenticate (prod AR)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/262802147889/locations/global/workloadIdentityPools/milli-pool/providers/github-actions-provider'
+          service_account: 'gh-npm-publisher@millipede-prod.iam.gserviceaccount.com'
+
+      - name: Publish tarball to prod AR
+        run: |
+          set -euo pipefail
+          ./scripts/write-millipedesg-npmrc.sh millipede-prod
+          npx -y google-artifactregistry-auth
+          npm publish "$(ls -1t millipedesg-fireway-*.tgz | head -1)"
+
+      - name: Dual-publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+          TARBALL="$(ls -1t millipedesg-fireway-*.tgz | head -1)"
+          {
+            echo "@millipedesg:registry=https://npm.pkg.github.com"
+            echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}"
+          } > .npmrc.gh
+          npm publish "$TARBALL" --userconfig .npmrc.gh --registry=https://npm.pkg.github.com
+          rm -f .npmrc.gh "$TARBALL"

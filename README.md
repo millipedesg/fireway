@@ -177,6 +177,26 @@ $ yarn setup
 $ yarn test
 ```
 
+## Publishing (@millipedesg/fireway)
+
+Releases are published via GitHub Actions (`.github/workflows/publish.yml`), not the local
+`yarn release` script. Each release is **dual-published** to Google Artifact Registry and
+GitHub Packages until ME-690 cutover.
+
+1. Bump `version` in `package.json` and merge to `master`.
+2. Push a git tag matching the version (e.g. `1.2.5`) or run **Publish @millipedesg/fireway**
+   with `confirm=publish`.
+
+### Local install from Artifact Registry
+
+Committed `.npmrc` points `@millipedesg` at Artifact Registry. Authenticate with ADC:
+
+```bash
+gcloud auth application-default login
+npx google-artifactregistry-auth
+yarn install
+```
+
 ## License
 
 MIT
