@@ -26,11 +26,11 @@
   "author": "mudassirmaroof <mudassir89@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "setup": "firebase setup:emulators:firestore",
-    "emulator": "firebase emulators:start --only firestore",
+    "setup": "npx firebase setup:emulators:firestore",
+    "emulator": "npx firebase emulators:start --only firestore --project fireway-ci",
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
-    "test": "firebase emulators:exec --only firestore --project fireway-ci npm run test-runner",
+    "test": "npx firebase emulators:exec --only firestore --project fireway-ci npm run test-runner",
     "release": "echo 'Use GitHub Actions: Publish @millipedesg/fireway (tag push or workflow_dispatch)' && exit 1"
   },
   "husky": {
