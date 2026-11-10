@@ -1,0 +1,36 @@
+name: Test
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java (Firestore emulator)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Firestore emulator (firebase-tools)
+        run: yarn setup
+
+      - name: Run tests
+        run: |
+          unset GOOGLE_APPLICATION_CREDENTIALS || true
+          yarn test

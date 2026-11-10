@@ -26,11 +26,11 @@
   "author": "mudassirmaroof <mudassir89@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "setup": "firebase setup:emulators:firestore",
-    "emulator": "firebase emulators:start --only firestore",
+    "setup": "node ./node_modules/firebase-tools/lib/bin/firebase.js setup:emulators:firestore",
+    "emulator": "node ./node_modules/firebase-tools/lib/bin/firebase.js emulators:start --only firestore --project fireway-ci",
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
-    "test": "FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
+    "test": "node ./node_modules/firebase-tools/lib/bin/firebase.js emulators:exec --only firestore --project fireway-ci \"yarn test-runner\"",
     "release": "echo 'Use GitHub Actions: Publish @millipedesg/fireway (tag push or workflow_dispatch)' && exit 1"
   },
   "husky": {

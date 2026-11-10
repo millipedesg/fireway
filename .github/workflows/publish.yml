@@ -34,16 +34,22 @@ jobs:
         with:
           node-version: 20
 
-      - name: Set up Cloud SDK (Firestore emulator for tests)
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Set up Java (Firestore emulator)
+        uses: actions/setup-java@v4
         with:
-          install_components: beta,cloud-firestore-emulator
+          distribution: temurin
+          java-version: 17
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Install Firestore emulator (firebase-tools)
+        run: yarn setup
+
       - name: Test
-        run: yarn test
+        run: |
+          unset GOOGLE_APPLICATION_CREDENTIALS || true
+          yarn test
 
       - name: Pack release tarball
         run: npm pack
