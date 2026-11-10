@@ -43,9 +43,9 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Test
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ''
-        run: yarn test
+        run: |
+          unset GOOGLE_APPLICATION_CREDENTIALS || true
+          yarn test
 
       - name: Pack release tarball
         run: npm pack

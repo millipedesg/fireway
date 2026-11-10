@@ -21,10 +21,15 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set up Cloud SDK (Firestore emulator for tests)
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: beta,cloud-firestore-emulator
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Run tests
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ''
-        run: yarn test
+        run: |
+          unset GOOGLE_APPLICATION_CREDENTIALS || true
+          yarn test
