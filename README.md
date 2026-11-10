@@ -180,16 +180,16 @@ $ yarn test
 ## Publishing (@millipedesg/fireway)
 
 Releases are published via GitHub Actions (`.github/workflows/publish.yml`), not the local
-`yarn release` script. Each release is **dual-published** to Google Artifact Registry and
-GitHub Packages until ME-690 cutover.
+`yarn release` script. Each release is published to **Google Artifact Registry** (dev,
+staging, and prod as below).
 
 1. Bump `version` in `package.json` and merge to `master`.
 2. Push a **semver git tag** matching the version (e.g. `1.2.5`, bare or `v1.2.5`) to publish
-   the same tarball to **dev, staging, and prod** Artifact Registry, then GitHub Packages.
+   the same tarball to **dev, staging, and prod** Artifact Registry.
 3. **Tag protection:** restrict who can push version tags — tags use the WIF `release` lane and
    can publish to prod AR.
-4. **Workflow dispatch** (`confirm=publish`) publishes to **dev AR + GitHub Packages** only (WIF
-   `main` lane); use a tag push for staging/prod.
+4. **Workflow dispatch** (`confirm=publish`) publishes to **dev AR** only (WIF `main` lane);
+   use a tag push for staging/prod.
 
 ### Local install from Artifact Registry
 
