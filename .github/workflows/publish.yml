@@ -62,6 +62,9 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tarball=${TARBALL}" >> "$GITHUB_OUTPUT"
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Authenticate (dev AR)
         uses: google-github-actions/auth@v2
         with:
