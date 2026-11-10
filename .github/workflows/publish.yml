@@ -62,14 +62,14 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tarball=${TARBALL}" >> "$GITHUB_OUTPUT"
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
       - name: Authenticate (dev AR)
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/837633946356/locations/global/workloadIdentityPools/milli-pool/providers/github'
           service_account: 'gh-npm-publisher@millipede-dev.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK (dev AR)
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Publish tarball to dev AR
         run: |
@@ -79,11 +79,11 @@ jobs:
           chmod +x ./scripts/write-millipedesg-npmrc.sh
           ./scripts/write-millipedesg-npmrc.sh millipede-dev
           npx -y ${{ env.GOOGLE_ARTIFACT_REGISTRY_AUTH_VERSION }} \
-            --repo-config=.npmrc --credential-config="$HOME/.npmrc"
-          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig="$HOME/.npmrc" &>/dev/null; then
+            --repo-config=.npmrc --credential-config=.npmrc
+          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig=.npmrc &>/dev/null; then
             echo "Skip dev AR: ${VERSION} already published"
           else
-            npm publish "$TARBALL" --userconfig="$HOME/.npmrc"
+            npm publish "$TARBALL" --userconfig=.npmrc
           fi
 
       - name: Authenticate (staging AR)
@@ -93,6 +93,10 @@ jobs:
           workload_identity_provider: 'projects/362983291711/locations/global/workloadIdentityPools/milli-pool/providers/github-actions-provider'
           service_account: 'gh-npm-publisher@millipede-staging.iam.gserviceaccount.com'
 
+      - name: Set up Cloud SDK (staging AR)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Publish tarball to staging AR
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -101,11 +105,11 @@ jobs:
           TARBALL='${{ steps.pkg.outputs.tarball }}'
           ./scripts/write-millipedesg-npmrc.sh millipede-staging
           npx -y ${{ env.GOOGLE_ARTIFACT_REGISTRY_AUTH_VERSION }} \
-            --repo-config=.npmrc --credential-config="$HOME/.npmrc"
-          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig="$HOME/.npmrc" &>/dev/null; then
+            --repo-config=.npmrc --credential-config=.npmrc
+          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig=.npmrc &>/dev/null; then
             echo "Skip staging AR: ${VERSION} already published"
           else
-            npm publish "$TARBALL" --userconfig="$HOME/.npmrc"
+            npm publish "$TARBALL" --userconfig=.npmrc
           fi
 
       - name: Authenticate (prod AR)
@@ -115,6 +119,10 @@ jobs:
           workload_identity_provider: 'projects/262802147889/locations/global/workloadIdentityPools/milli-pool/providers/github-actions-provider'
           service_account: 'gh-npm-publisher@millipede-prod.iam.gserviceaccount.com'
 
+      - name: Set up Cloud SDK (prod AR)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Publish tarball to prod AR
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -123,11 +131,11 @@ jobs:
           TARBALL='${{ steps.pkg.outputs.tarball }}'
           ./scripts/write-millipedesg-npmrc.sh millipede-prod
           npx -y ${{ env.GOOGLE_ARTIFACT_REGISTRY_AUTH_VERSION }} \
-            --repo-config=.npmrc --credential-config="$HOME/.npmrc"
-          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig="$HOME/.npmrc" &>/dev/null; then
+            --repo-config=.npmrc --credential-config=.npmrc
+          if npm view "@millipedesg/fireway@${VERSION}" version --userconfig=.npmrc &>/dev/null; then
             echo "Skip prod AR: ${VERSION} already published"
           else
-            npm publish "$TARBALL" --userconfig="$HOME/.npmrc"
+            npm publish "$TARBALL" --userconfig=.npmrc
           fi
 
       - name: Dual-publish to GitHub Packages
