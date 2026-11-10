@@ -16,8 +16,10 @@ function wrapper(fn) {
 			t.fail(e);
 		} finally {
 			t.end();
-			result.firestore.disableNetwork && result.firestore.disableNetwork();
-		}1
+			if (result?.firestore?.disableNetwork) {
+				await result.firestore.disableNetwork();
+			}
+		}
 	}
 }
 

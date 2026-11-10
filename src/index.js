@@ -290,7 +290,7 @@ async function migrate({path: dir, projectId, dryrun, debug = false, require: re
 
 	// Get the latest migration
 	const result = await collection.orderBy('installed_rank', 'desc').get();
-	const latest = result.docs[0].data();
+	const latest = result.docs.length > 0 ? result.docs[0].data() : undefined;
 
 	if (latest && !latest.success) {
 		throw new Error(`Migration to version ${latest.version} using ${latest.script} failed! Please restore backups and roll back database and code!`);

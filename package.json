@@ -30,7 +30,7 @@
     "emulator": "firebase emulators:start --only firestore",
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
-    "test": "FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
+    "test": "firebase emulators:exec --only firestore --project fireway-ci npm run test-runner",
     "release": "echo 'Use GitHub Actions: Publish @millipedesg/fireway (tag push or workflow_dispatch)' && exit 1"
   },
   "husky": {

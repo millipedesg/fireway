@@ -43,6 +43,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Test
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ''
         run: yarn test
 
       - name: Pack release tarball
