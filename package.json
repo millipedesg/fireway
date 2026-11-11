@@ -39,7 +39,7 @@
     }
   },
   "dependencies": {
-    "@google-cloud/firestore": "^7.11.0",
+    "@google-cloud/firestore": "^7.11.6",
     "callsites": "^3.1.0",
     "md5": "^2.3.0",
     "sade": "^1.8.1",
@@ -49,12 +49,15 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@types/node": "^22.14.1",
     "capture-console": "^1.0.2",
-    "firebase": "^11.6.0",
-    "firebase-tools": "^14.1.0",
+    "firebase": "^11.10.0",
+    "firebase-tools": "^15.35.0",
     "husky": "^9.1.7",
-    "start-server-and-test": "^2.0.11",
-    "tape": "^5.9.0",
+    "start-server-and-test": "^2.1.5",
+    "tape": "^5.10.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "resolutions": {
+    "@grpc/grpc-js": "^1.13.6"
   }
 }
