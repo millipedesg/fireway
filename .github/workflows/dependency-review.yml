@@ -1,0 +1,28 @@
+name: Dependency Review
+
+# Repo-local copy of millipedesg/developer-tools/.github/workflows/dependency-review.yml
+# (ME-726-18). This repo is public, and GitHub can't run a required workflow from an
+# internal repo on a public one, so it is excluded from the enterprise "Dependency review"
+# ruleset and instead a repo ruleset requires this job's check. Keep it in sync with the
+# developer-tools copy.
+#
+# Fails a PR that adds or upgrades to a dependency with a known vulnerability of any
+# severity, in runtime or development dependencies. Alerts already on the default branch
+# do not fail it; only what the PR introduces.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependency review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: low
+          fail-on-scopes: runtime, development, unknown
+          comment-summary-in-pr: on-failure
