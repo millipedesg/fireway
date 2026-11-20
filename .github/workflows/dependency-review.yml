@@ -26,3 +26,9 @@ jobs:
           fail-on-severity: low
           fail-on-scopes: runtime, development, unknown
           comment-summary-in-pr: on-failure
+          # Accepted advisories (comma-separated). Give each one a reason below.
+          allow-ghsas: GHSA-gcqx-w48m-w2h4
+          # GHSA-gcqx-w48m-w2h4: deepmerge <=4.3.1 prototype poisoning (low).
+          #   Withdrawn by GitHub; no patched version exists. Pulled in by
+          #   jest-config (Jest 30) as a dev dependency. Accepted 2026-11-16
+          #   (ME-726), matching developer-tools. Remove once deepmerge ships a fix.
